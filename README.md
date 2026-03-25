@@ -60,3 +60,7 @@ To run the automated smart contract testing suite, use:
 ```bash
 npx hardhat test
 ```
+
+## 🚀 Deployment Notes
+- For frontend deployment, connect this repository to Vercel and it will automatically build using the App Router configuration.
+- For Smart Contract deployment, ensure your `.env` is configured and use `npx hardhat run scripts/deploy.ts --network <network_name>`.
