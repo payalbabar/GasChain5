@@ -1,22 +1,36 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { Bebas_Neue, DM_Serif_Display, IBM_Plex_Mono, Manrope } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/layout/Navbar";
 import { Providers } from "./providers";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const bebasNeue = Bebas_Neue({
+  weight: "400",
   subsets: ["latin"],
+  variable: "--font-bebas",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
+const dmSerifDisplay = DM_Serif_Display({
+  weight: "400",
   subsets: ["latin"],
+  style: ["normal", "italic"],
+  variable: "--font-serif",
+});
+
+const ibmPlexMono = IBM_Plex_Mono({
+  weight: ["400", "600"],
+  subsets: ["latin"],
+  variable: "--font-mono-plex",
+});
+
+const manrope = Manrope({
+  weight: ["300", "400", "600", "800"],
+  subsets: ["latin"],
+  variable: "--font-manrope",
 });
 
 export const metadata: Metadata = {
-  title: "MediChain - Decentralized Healthcare",
-  description: "Secure, decentralized electronic health records and telemedicine platform.",
+  title: "MediVault — Medical Records on Chain",
+  description: "Secure, immutable, patient-controlled health records on the Stellar/Soroban ecosystem.",
 };
 
 export default function RootLayout({
@@ -27,12 +41,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} antialiased`}
+      className={`${bebasNeue.variable} ${dmSerifDisplay.variable} ${ibmPlexMono.variable} ${manrope.variable} antialiased`}
     >
-      <body className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-50 flex flex-col font-sans">
+      <body className="min-h-screen bg-cream text-ink font-manrope">
         <Providers>
-          <Navbar />
-          <main className="flex-grow">{children}</main>
+          {children}
         </Providers>
       </body>
     </html>
