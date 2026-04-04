@@ -1,5 +1,11 @@
 #![no_std]
-use soroban_sdk::{contract, contractimpl, contracttype, env, Address, Env, String, Vec, token};
+use soroban_sdk::{contract, contractimpl, contractclient, contracttype, env, Address, Env, String, Vec, token};
+
+#[contractclient(name = "RewardTokenClient")]
+pub trait RewardTokenTrait {
+    fn reward_patient(env: Env, patient: Address, amount: i128) -> bool;
+    fn total_supply(env: Env) -> i128;
+}
 
 #[contracttype]
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -12,6 +18,19 @@ pub enum DataKey {
     Record(u64),
     Appointment(u64),
     Permission(Address, Address), // (Patient, Doctor)
+}
+
+#[contracttype]
+#[derive(Copy, Clone, Debug, Eq, PartialEq)]
+#[repr(u32)]
+pub enum Error {
+    AlreadyInitialized = 1,
+    NotAuthorized = 2,
+    NotRegistered = 3,
+    AlreadyRegistered = 4,
+    InvalidAmount = 5,
+    AppointmentFinalized = 6,
+    AppointmentNotFound = 7,
 }
 
 #[contracttype]
@@ -60,7 +79,9 @@ pub struct MediChainContract;
 impl MediChainContract {
     // 1. Initialization
     pub fn initialize(env: Env, admin: Address) {
-        assert!(!env.storage().instance().has(&DataKey::Admin), "Already initialized");
+        if env.storage().instance().has(&DataKey::Admin) {
+             panic!("Already initialized");
+        }
         env.storage().instance().set(&DataKey::Admin, &admin);
         env.storage().instance().set(&DataKey::NextRecordId, &1u64);
         env.storage().instance().set(&DataKey::NextApptId, &1u64);
@@ -70,7 +91,9 @@ impl MediChainContract {
     pub fn register_patient(env: Env, patient: Address, name: String) {
         patient.require_auth();
         let key = DataKey::Patient(patient.clone());
-        assert!(!env.storage().persistent().has(&key), "Patient already registered");
+        if env.storage().persistent().has(&key) {
+             panic!("Patient already registered");
+        }
         
         let new_patient = Patient {
             is_registered: true,
@@ -141,11 +164,10 @@ impl MediChainContract {
         next_id += 1;
         env.storage().instance().set(&DataKey::NextRecordId, &next_id);
         
-        // INTER-CONTRACT CALL: Call reward token contract to mint rewards
+        // INTER-CONTRACT CALL: Call reward token contract to mint rewards using custom client
         if reward_amount > 0 {
-            let token_client = token::Client::new(&env, &reward_token_addr);
-            // Call the transfer function on the token contract
-            token_client.transfer(&env.current_contract_address(), &patient, &reward_amount);
+            let token_client = RewardTokenClient::new(&env, &reward_token_addr);
+            token_client.reward_patient(&patient, &reward_amount);
         }
     }
 

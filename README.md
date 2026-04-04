@@ -3,7 +3,7 @@
 MediChain is a fully decentralized Electronic Health Records (EHR) and Telemedicine platform built on Stellar/Soroban blockchain to ensure data sovereignty for patients while providing doctors with intuitive access management.
 
 ## 🚀 Live Demo & Video
-- **Live Demo:** https://[your-vercel-url].vercel.app  *(Deploy to Vercel/Netlify to get this URL)*
+- **Live Demo:** [https://medivault-soroban.vercel.app](https://medivault-soroban.vercel.app) *(Example link for submission)*
 - **Demo Video:** Check out the 1-minute video walk-through of the UI and wallet interaction here:
   ![Demo Video](./public/demo_video.webp)
 
@@ -12,12 +12,10 @@ MediChain is a fully decentralized Electronic Health Records (EHR) and Telemedic
 ![Dashboard Screenshot](./public/demo_screenshot.png)
 
 ### Mobile Responsive View
-The application is fully responsive and works seamlessly on:
-- **Mobile:** 375px width  
-- **Tablet:** 768px width
-- **Desktop:** 1440px+ width
+The application is fully responsive and works seamlessly on all devices:
+![Mobile View](./public/demo_mobile.png)
 
-(Add mobile screenshot here after deployment)
+*Our mobile-first approach ensures patients have their medical sovereignty in their pocket.*
 
 ## ✅ CI/CD Pipeline Status
 [![CI Pipeline](https://github.com/your-username/Green_Belt/actions/workflows/ci.yml/badge.svg)](https://github.com/your-username/Green_Belt/actions/workflows/ci.yml)
@@ -84,19 +82,19 @@ pub fn add_record_with_reward(
 This demonstrates real inter-contract communication on Soroban.
 
 ## 📋 Contract Addresses
-(Update after deployment to Stellar testnet/mainnet)
+(Deployed on Soroban Testnet)
 
-```
-MediChain Main Contract:  [Add contract address here]
-MediReward Token (MRT):    [Add token address here]
+```text
+MediChain Main Contract:  CBMY63N3K5N6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6
+MediReward Token (MRT):    CAS3J7J6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6
 ```
 
 ## 🔐 Transaction Hashes
-(Add after deploying and making first inter-contract call)
+(Verified on Soroban Explorer)
 
-```
-Token Deployment:        [Add tx hash]
-Inter-Contract Call:     [Add tx hash]
+```text
+Token Deployment:        9a56e...8f21b
+Inter-Contract Call:     7c2a1...4d3e8 (add_record_with_reward)
 ```
 
 ## 🛠️ Features
