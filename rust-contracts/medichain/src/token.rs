@@ -1,5 +1,5 @@
 #![no_std]
-use soroban_sdk::{contract, contractimpl, contracttype, env, Address, Env, String, Vec, token::TokenClient};
+use soroban_sdk::{contract, contractimpl, contracttype, Address, Env, String, Vec, token::TokenClient};
 
 #[contracttype]
 #[derive(Clone, Debug, Eq, PartialEq)]

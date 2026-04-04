@@ -85,7 +85,7 @@ This demonstrates real inter-contract communication on Soroban.
 (Deployed on Soroban Testnet)
 
 ```text
-MediChain Main Contract:  CBMY63N3K5N6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6
+MediChain Main Contract:  CBG5DNSZQQJITR7OH5ELPDXLUG3EEX7W3FWNCFOZANQSXMQDUR2LGW5N
 MediReward Token (MRT):    CAS3J7J6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6
 ```
 
@@ -94,8 +94,12 @@ MediReward Token (MRT):    CAS3J7J6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6Y7J6Y
 
 ```text
 Token Deployment:        9a56e...8f21b
-Inter-Contract Call:     7c2a1...4d3e8 (add_record_with_reward)
+Inter-Contract Call:     027768b7685b70a8239452b439534b0bca90b5580c432ea415fd731e65ff2010
 ```
+
+### 🔍 View on Explorer
+Check the live contract on the Stellar Development Foundation Testnet Explorer:
+[Stellar Laboratory - CBG5DN...LGW5N](https://lab.stellar.org/r/testnet/contract/CBG5DNSZQQJITR7OH5ELPDXLUG3EEX7W3FWNCFOZANQSXMQDUR2LGW5N)
 
 ## 🛠️ Features
 - **Web3 Wallet Authentication:** Real EIP-1193 integration utilizing `window.ethereum` (MetaMask, Stellar Freighter)

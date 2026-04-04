@@ -1,5 +1,5 @@
 #![no_std]
-use soroban_sdk::{contract, contractimpl, contractclient, contracttype, env, Address, Env, String, Vec, token};
+use soroban_sdk::{contract, contractimpl, contractclient, contracttype, Address, Env, String, Vec, token};
 
 #[contractclient(name = "RewardTokenClient")]
 pub trait RewardTokenTrait {
