@@ -1,9 +1,10 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
 import { useWeb3 } from "@/context/Web3Context";
 import { useRouter } from "next/navigation";
+import { useContractEvents, type ContractEvent } from "@/hooks/useContractEvents";
 
 // Types
 type Record = {
@@ -38,10 +39,10 @@ export default function Dashboard() {
 
   // Redirect if not connected
   useEffect(() => {
-    if (!isConnected && !address) {
+    if (!address) {
       router.push("/");
     }
-  }, [isConnected, address, router]);
+  }, [address, router]);
 
   const [activeTab, setActiveTab] = useState("overview");
   const [records, setRecords] = useState<Record[]>([]);
@@ -65,31 +66,65 @@ export default function Dashboard() {
   const [uploadForm, setUploadForm] = useState({ name: "", type: "Lab Report", date: "", doctor: "", notes: "", file: null as File | null });
   const [grantForm, setGrantForm] = useState({ addr: "", name: "", spec: "" });
 
+  // Activity management
   const addActivity = (msg: string, dot = "") => {
     setActivities(prev => [{ msg, time: new Date().toLocaleTimeString(), dot }, ...prev]);
   };
 
+  // Real-time contract event listener
+  const handleContractEvent = useCallback((event: ContractEvent) => {
+    switch (event.type) {
+      case 'RECORD_UPLOADED':
+        setActivities(prev => [{ msg: `New record uploaded: <strong>${event.data.recordName}</strong>`, time: new Date().toLocaleTimeString(), dot: "lime" }, ...prev]);
+        break;
+      case 'ACCESS_GRANTED':
+        setActivities(prev => [{ msg: `Access granted to <strong>${event.data.doctorName}</strong>`, time: new Date().toLocaleTimeString(), dot: "lime" }, ...prev]);
+        break;
+      case 'ACCESS_REVOKED':
+        setActivities(prev => [{ msg: `Access revoked from <strong>${event.data.doctorName}</strong>`, time: new Date().toLocaleTimeString(), dot: "rust" }, ...prev]);
+        break;
+      default:
+        break;
+    }
+  }, []);
+
+  useContractEvents(handleContractEvent);
+
   const handleUpload = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!uploadForm.name || !uploadForm.date) return;
+    if (!uploadForm.name || !uploadForm.date || !uploadForm.file) return;
 
-    // Fake upload delay
-    const fakeHash = "Qm" + Array.from({ length: 44 }, () => "ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz0123456789"[Math.floor(Math.random() * 58)]).join("");
-    const newRecord: Record = {
-      id: Date.now(),
-      name: uploadForm.name,
-      type: uploadForm.type,
-      date: uploadForm.date,
-      doctor: uploadForm.doctor || "Self-uploaded",
-      notes: uploadForm.notes,
-      hash: fakeHash,
-      uploaded: new Date().toISOString()
-    };
+    const btn = e.currentTarget.querySelector('button[type="submit"]') as HTMLButtonElement;
+    const originalText = btn.textContent;
+    btn.textContent = "⏳ Uploading to local storage...";
+    btn.disabled = true;
 
-    setRecords([...records, newRecord]);
-    addActivity(`Record <strong>"${uploadForm.name}"</strong> uploaded to IPFS`, "lime");
-    setUploadForm({ name: "", type: "Lab Report", date: "", doctor: "", notes: "", file: null });
-    setActiveTab("records");
+    try {
+      // Temporary local upload - creates a blob URL for development
+      const localUrl = URL.createObjectURL(uploadForm.file);
+      
+      const newRecord: Record = {
+        id: Date.now(),
+        name: uploadForm.name,
+        type: uploadForm.type,
+        date: uploadForm.date,
+        doctor: uploadForm.doctor || "Self-uploaded",
+        notes: uploadForm.notes,
+        hash: localUrl,
+        uploaded: new Date().toISOString()
+      };
+
+      setRecords([...records, newRecord]);
+      addActivity(`Record <strong>"${uploadForm.name}"</strong> uploaded (local dev mode)`, "lime");
+      setUploadForm({ name: "", type: "Lab Report", date: "", doctor: "", notes: "", file: null });
+      setActiveTab("records");
+    } catch (error: any) {
+      console.error(error);
+      addActivity(`Failed to upload: <strong>${error.message || "Unknown error"}</strong>`, "rust");
+    } finally {
+      btn.textContent = originalText;
+      btn.disabled = false;
+    }
   };
 
   const handleGrant = (e: React.FormEvent) => {
@@ -253,10 +288,19 @@ export default function Dashboard() {
               </div>
 
               {uploadForm.file && (
-                <form onSubmit={handleUpload} className="border-t-2 border-card-border pt-8 animate-in fade-in duration-300">
+                <form 
+                  onSubmit={handleUpload} 
+                  className="border-t-2 border-card-border pt-8 animate-in fade-in duration-300"
+                >
                   <div className="font-mono-plex text-[11px] text-ink-soft tracking-wider mb-8 flex items-center gap-2">📎 {uploadForm.file.name} ({(uploadForm.file.size/1024).toFixed(1)} KB)</div>
                   <div className="grid grid-cols-2 gap-5 mb-5 md:mb-5">
-                    <FormField label="Record Name" value={uploadForm.name} onChange={(v) => setUploadForm({...uploadForm, name: v})} placeholder="e.g. Blood Test Results" />
+                    <FormField 
+                      label="Record Name" 
+                      value={uploadForm.name} 
+                      onChange={(v) => setUploadForm({...uploadForm, name: v})} 
+                      placeholder="e.g. Blood Test Results" 
+                      required
+                    />
                     <div className="flex flex-col gap-2">
                        <label className="font-mono-plex text-[9px] tracking-[3px] uppercase text-ink-soft">Record Type</label>
                        <select 
@@ -273,11 +317,22 @@ export default function Dashboard() {
                     </div>
                   </div>
                   <div className="grid grid-cols-2 gap-5 mb-5">
-                    <FormField label="Date" type="date" value={uploadForm.date} onChange={(v) => setUploadForm({...uploadForm, date: v})} />
+                    <FormField 
+                      label="Date" 
+                      type="date" 
+                      value={uploadForm.date} 
+                      onChange={(v) => setUploadForm({...uploadForm, date: v})} 
+                      required
+                    />
                     <FormField label="Doctor / Facility" value={uploadForm.doctor} onChange={(v) => setUploadForm({...uploadForm, doctor: v})} placeholder="e.g. City General Hospital" />
                   </div>
                   <FormField label="Notes (optional)" value={uploadForm.notes} onChange={(v) => setUploadForm({...uploadForm, notes: v})} placeholder="Any additional info" />
-                  <button type="submit" className="mt-8 font-mono-plex text-[11px] font-semibold tracking-[3px] uppercase bg-burgundy text-lime px-10 py-4 hover:bg-ink transition-all">⬡ Upload to IPFS & Chain</button>
+                  <button 
+                    type="submit" 
+                    className="mt-8 font-mono-plex text-[11px] font-semibold tracking-[3px] uppercase bg-burgundy text-lime px-10 py-4 hover:bg-ink transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    ⬡ Upload to IPFS & Chain
+                  </button>
                 </form>
               )}
             </div>
@@ -353,6 +408,16 @@ export default function Dashboard() {
               <button onClick={() => setSelectedRecord(null)} className="text-white/50 text-xl hover:text-lime transition-all">✕</button>
             </div>
             <div className="p-10 space-y-5">
+              {['Imaging', 'Lab Report'].includes(selectedRecord.type) && (
+                <div className="mb-8 border-2 border-card-border p-2 bg-white">
+                  <img
+                    src={selectedRecord.hash.startsWith('blob:') ? selectedRecord.hash : `https://ipfs.io/ipfs/${selectedRecord.hash}`}
+                    alt="Record Detail"
+                    className="w-full h-auto rounded-sm"
+                    onError={(e) => (e.currentTarget.style.display = 'none')}
+                  />
+                </div>
+              )}
               <ModalField label="Name" val={selectedRecord.name} />
               <ModalField label="Type" val={selectedRecord.type} />
               <ModalField label="Date" val={selectedRecord.date} />
@@ -361,7 +426,11 @@ export default function Dashboard() {
               <ModalField label="Uploaded" val={new Date(selectedRecord.uploaded).toLocaleString()} />
               <ModalField label="Notes" val={selectedRecord.notes || "—"} />
               <div className="pt-8 border-t-2 border-card-border mt-8">
-                <a href={`https://ipfs.io/ipfs/${selectedRecord.hash}`} target="_blank" className="font-mono-plex text-[10px] tracking-[2px] uppercase text-burgundy border-b border-burgundy hover:text-ink hover:border-ink transition-all">View on IPFS ↗</a>
+                {selectedRecord.hash.startsWith('blob:') ? (
+                  <span className="font-mono-plex text-[10px] tracking-[2px] uppercase text-lime">Dev Mode: Local Upload</span>
+                ) : (
+                  <a href={`https://ipfs.io/ipfs/${selectedRecord.hash}`} target="_blank" className="font-mono-plex text-[10px] tracking-[2px] uppercase text-burgundy border-b border-burgundy hover:text-ink hover:border-ink transition-all">View on IPFS ↗</a>
+                )}
               </div>
             </div>
           </div>
@@ -420,12 +489,13 @@ function RecordRow({ index, record, onView, onDelete }: { index: number; record:
   );
 }
 
-function FormField({ label, value, onChange, placeholder, type = "text" }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string; type?: string }) {
+function FormField({ label, value, onChange, placeholder, type = "text", required = false }: { label: string; value: string; onChange: (v: string) => void; placeholder?: string; type?: string; required?: boolean }) {
   return (
     <div className="flex flex-col gap-2">
       <label className="font-mono-plex text-[9px] tracking-[3px] uppercase text-ink-soft">{label}</label>
       <input 
         type={type} 
+        required={required}
         className="font-manrope text-sm bg-cream border-2 border-card-border p-3 outline-none focus:border-burgundy transition-all"
         value={value}
         onChange={(e) => onChange(e.target.value)}

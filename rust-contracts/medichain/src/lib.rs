@@ -118,6 +118,37 @@ impl MediChainContract {
         env.storage().instance().set(&DataKey::NextRecordId, &next_id);
     }
 
+    /// Add record with automatic reward to patient (Inter-contract call example)
+    pub fn add_record_with_reward(env: Env, patient: Address, record_cid: String, title: String, reward_token_addr: Address, reward_amount: i128) {
+        patient.require_auth();
+        let p_key = DataKey::Patient(patient.clone());
+        let mut p: Patient = env.storage().persistent().get(&p_key).expect("Patient not registered");
+        
+        let mut next_id: u64 = env.storage().instance().get(&DataKey::NextRecordId).unwrap();
+        
+        let record = Record {
+            id: next_id,
+            record_cid,
+            title,
+            timestamp: env.ledger().timestamp(),
+            author: patient.clone(),
+        };
+        
+        env.storage().persistent().set(&DataKey::Record(next_id), &record);
+        p.record_ids.push_back(next_id);
+        env.storage().persistent().set(&p_key, &p);
+        
+        next_id += 1;
+        env.storage().instance().set(&DataKey::NextRecordId, &next_id);
+        
+        // INTER-CONTRACT CALL: Call reward token contract to mint rewards
+        if reward_amount > 0 {
+            let token_client = token::Client::new(&env, &reward_token_addr);
+            // Call the transfer function on the token contract
+            token_client.transfer(&env.current_contract_address(), &patient, &reward_amount);
+        }
+    }
+
     pub fn add_record_for_patient(env: Env, doctor: Address, patient: Address, record_cid: String, title: String) {
         doctor.require_auth();
         let perm_key = DataKey::Permission(patient.clone(), doctor.clone());

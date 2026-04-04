@@ -3,11 +3,20 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useWeb3 } from "@/context/Web3Context";
+import { useRouter } from "next/navigation";
 
 export default function Home() {
   const { address, isConnected, connect } = useWeb3();
   const [counts, setCounts] = useState({ records: 0, patients: 0, doctors: 0, uptime: 0 });
   const statsRef = useRef<HTMLElement>(null);
+
+  const router = useRouter();
+
+  useEffect(() => {
+    if (address) {
+      router.push("/dashboard");
+    }
+  }, [address, router]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -88,8 +97,8 @@ export default function Home() {
           </p>
           <div className="flex flex-wrap gap-4 items-center">
             <Link
-              href={isConnected ? "/dashboard" : "#"}
-              onClick={(e) => !isConnected && (e.preventDefault(), connect())}
+              href={address ? "/dashboard" : "#"}
+              onClick={(e) => !address && (e.preventDefault(), connect())}
               className="font-mono-plex text-[12px] font-semibold tracking-[3px] uppercase bg-burgundy text-lime px-10 py-[18px] transition-all hover:bg-ink group relative overflow-hidden"
             >
               Launch App

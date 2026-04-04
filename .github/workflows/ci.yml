@@ -29,3 +29,13 @@ jobs:
 
     - name: Lint
       run: npm run lint
+
+    - name: Run Contract Tests
+      working-directory: ./rust-contracts/medichain
+      run: |
+        if command -v cargo &> /dev/null; then
+          cargo test
+        else
+          echo "Cargo not installed, skipping Rust tests"
+        fi
+      continue-on-error: true
