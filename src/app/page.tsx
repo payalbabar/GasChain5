@@ -2,11 +2,11 @@
 
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { useWeb3 } from "@/context/Web3Context";
+import { useStellar } from "@/context/StellarContext";
 import { useRouter } from "next/navigation";
 
 export default function Home() {
-  const { address, isConnected, connect } = useWeb3();
+  const { address, isConnected, connect } = useStellar();
   const [counts, setCounts] = useState({ records: 0, patients: 0, doctors: 0, uptime: 0 });
   const statsRef = useRef<HTMLElement>(null);
 
@@ -52,10 +52,10 @@ export default function Home() {
   }, []);
 
   const tickerItems = [
-    "Decentralised Storage", "IPFS Pinned", "MetaMask Auth",
+    "Decentralised Storage", "IPFS Pinned", "Freighter Auth",
     "Zero Knowledge", "Open Protocol", "Immutable Records",
     "Patient Owned", "Doctor Access Control", "Audit Trail",
-    "Decentralised Storage", "IPFS Pinned", "MetaMask Auth",
+    "Decentralised Storage", "IPFS Pinned", "Freighter Auth",
     "Zero Knowledge", "Open Protocol", "Immutable Records",
     "Patient Owned", "Doctor Access Control", "Audit Trail",
   ];

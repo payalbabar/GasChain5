@@ -129,7 +129,7 @@ Check the live contract on the Stellar Development Foundation Testnet Explorer:
 [Stellar Laboratory - CBG5DN...LGW5N](https://lab.stellar.org/r/testnet/contract/CBG5DNSZQQJITR7OH5ELPDXLUG3EEX7W3FWNCFOZANQSXMQDUR2LGW5N)
 
 ## 🛠️ Features
-- **Web3 Wallet Authentication:** Real EIP-1193 integration utilizing `window.ethereum` (MetaMask, Stellar Freighter)
+- **Stellar Wallet Authentication:** Native integration with **Freighter Wallet** for secure account access and transaction signing on the Stellar network.
 - **Patient Dashboard:** Secure viewing of health records, uploading documents, managing doctor permissions
 - **Doctor Portal:** View authorized patient records, add medical notes
 - **Smart Contracts (Rust):** Fully migrated to Soroban SDK - see `rust-contracts` folder
@@ -140,9 +140,8 @@ Check the live contract on the Stellar Development Foundation Testnet Explorer:
 
 ## 💻 Tech Stack
 - **Frontend:** Next.js 15 (App Router), React 19, Tailwind CSS v4
-- **Smart Contracts:** Rust, Soroban SDK v20.0
-- **Blockchain:** Stellar, Soroban 
-- **Web3:** Stellar Freighter Wallet, Soroban Client
+- **Web3:** Stellar Freighter Wallet, Soroban SDK
+- **Smart Contracts:** Rust / Soroban (v21.0 compatible)
 - **Icons:** Lucide React
 - **File Storage:** IPFS (Pinata) / Local blob URLs for development
 

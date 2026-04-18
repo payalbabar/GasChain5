@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
-import { useWeb3 } from "@/context/Web3Context";
+import { useStellar } from "@/context/StellarContext";
 import { useRouter } from "next/navigation";
 import { useContractEvents, type ContractEvent, createRecordUploadedEvent, createRewardEarnedEvent } from "@/hooks/useContractEvents";
 
@@ -34,7 +34,7 @@ type LogEntry = {
 };
 
 export default function Dashboard() {
-  const { address, isConnected, disconnect } = useWeb3();
+  const { address, isConnected, disconnect } = useStellar();
   const router = useRouter();
 
   // Redirect if not connected
@@ -195,7 +195,7 @@ export default function Dashboard() {
     addActivity(`Record <strong>"${rec.name}"</strong> deleted`, "rust");
   };
 
-  const shortAddr = address ? `${address.slice(0, 6)}...${address.slice(-4)}` : "Not Connected";
+  const shortAddr = address ? `${address.slice(0, 6)}...${address.slice(-6)}` : "Not Connected";
 
   return (
     <div className="flex flex-col min-h-screen bg-cream text-ink">
@@ -235,6 +235,7 @@ export default function Dashboard() {
             <NavItem label="My Records" icon="📂" active={activeTab === "records"} onClick={() => { setActiveTab("records"); setIsMobileMenuOpen(false); }} />
             <NavItem label="Upload" icon="↑" active={activeTab === "upload"} onClick={() => { setActiveTab("upload"); setIsMobileMenuOpen(false); }} />
             <NavItem label="Doctors" icon="👨⚕" active={activeTab === "doctors"} onClick={() => { setActiveTab("doctors"); setIsMobileMenuOpen(false); }} />
+            <NavItem label="Wallet" icon="💰" active={activeTab === "wallet"} onClick={() => { setActiveTab("wallet"); setIsMobileMenuOpen(false); }} />
             <NavItem label="Access Log" icon="🔑" active={activeTab === "access"} onClick={() => { setActiveTab("access"); setIsMobileMenuOpen(false); }} />
           </nav>
           <div className="p-6 border-t border-white/10 mt-auto">
@@ -447,6 +448,14 @@ export default function Dashboard() {
                 )}
             </div>
           )}
+
+          {/* WALLET */}
+          {activeTab === "wallet" && (
+            <div className="p-12 animate-in fade-in duration-500">
+               <div className="font-bebas text-[28px] tracking-[2px] text-ink mb-8">STELLAR WALLET</div>
+               <WalletPanel />
+            </div>
+          )}
         </main>
       </div>
 
@@ -571,6 +580,79 @@ function EmptyState({ icon, title, sub }: { icon: string; title: string; sub: st
       <div className="text-[48px] mb-4 opacity-40">{icon}</div>
       <div className="font-bebas text-[32px] tracking-[2px] text-mist mb-2">{title}</div>
       <div className="font-mono-plex text-[11px] text-mist tracking-widest">{sub}</div>
+    </div>
+  );
+}
+
+import { sendXLM } from "@/components/Freighter";
+function WalletPanel() {
+  const { balance } = useStellar();
+  const [destination, setDestination] = useState("");
+  const [amount, setAmount] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [txResult, setTxResult] = useState("");
+  const [txHash, setTxHash] = useState("");
+
+  const handleSend = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!destination || !amount) return alert("Please enter destination and amount.");
+    try {
+      setLoading(true);
+      setTxResult("Sending...");
+      setTxHash("");
+      const res = await sendXLM(destination, amount);
+      setTxResult("Transaction Successful!");
+      setTxHash(res.hash);
+    } catch (e: any) {
+      setTxResult("Transaction Failed: " + (e.message || "Unknown error"));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="max-w-2xl bg-white border-2 border-ink p-10">
+      <div className="bg-lime/10 border border-lime/30 p-8 text-center mb-10">
+        <div className="font-mono-plex text-[11px] tracking-[3px] uppercase text-ink-soft mb-2">Available Balance</div>
+        <div className="font-bebas text-[64px] text-ink leading-none">{balance} XLM</div>
+      </div>
+
+      <form onSubmit={handleSend} className="space-y-6">
+        <FormField 
+          label="Destination Address" 
+          value={destination} 
+          onChange={setDestination} 
+          placeholder="G... (Stellar Public Key)" 
+          required 
+        />
+        <FormField 
+          label="Amount (XLM)" 
+          type="number" 
+          value={amount} 
+          onChange={setAmount} 
+          placeholder="e.g. 10.5" 
+          required 
+        />
+        <button 
+          type="submit" 
+          disabled={loading}
+          className="w-full font-mono-plex text-[12px] font-semibold tracking-[4px] uppercase bg-burgundy text-lime py-5 hover:bg-ink transition-all disabled:opacity-50"
+        >
+          {loading ? "PROCESSING..." : "🚀 SEND XLM"}
+        </button>
+      </form>
+
+      {txResult && (
+        <div className={`mt-10 p-6 border-2 ${txResult.includes("Successful") ? 'border-lime bg-lime/5' : 'border-rust bg-rust/5'}`}>
+          <div className="font-bebas text-[22px] tracking-[2px]">{txResult}</div>
+          {txHash && (
+            <div className="mt-3">
+              <div className="font-mono-plex text-[9px] text-ink-soft mb-1 uppercase tracking-widest">Transaction Hash</div>
+              <a href={`https://stellar.expert/explorer/testnet/tx/${txHash}`} target="_blank" className="font-mono-plex text-[11px] text-burgundy border-b border-burgundy break-all hover:text-ink hover:border-ink transition-all">{txHash}</a>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }

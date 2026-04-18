@@ -1,11 +1,11 @@
 "use client"
 
-import { Web3Provider } from "@/context/Web3Context"
+import { StellarProvider } from "@/context/StellarContext"
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <Web3Provider>
+    <StellarProvider>
       {children}
-    </Web3Provider>
+    </StellarProvider>
   )
 }

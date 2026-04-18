@@ -3,14 +3,14 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Stethoscope, Wallet, LogOut } from "lucide-react";
-import { useWeb3 } from "@/context/Web3Context";
+import { useStellar } from "@/context/StellarContext";
 
 export default function Navbar() {
-  const { address, isConnected, isConnecting, connect, disconnect } = useWeb3();
+  const { address, isConnected, isConnecting, connect, disconnect } = useStellar();
   const pathname = usePathname();
 
   const truncateAddress = (addr: string) => {
-    return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+    return `${addr.slice(0, 6)}...${addr.slice(-6)}`;
   };
 
   const navLinks = [
