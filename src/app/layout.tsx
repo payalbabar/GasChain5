@@ -31,8 +31,8 @@ const manrope = Manrope({
 });
 
 export const metadata: Metadata = {
-  title: "MediVault — Medical Records on Chain",
-  description: "Secure, immutable, patient-controlled health records on the Stellar/Soroban ecosystem.",
+  title: "GasChain — Medical Records on Chain",
+  description: "Secure, immutable, patient-controlled health records on the Stellar/Soroban ecosystem (LPG Connect).",
 };
 
 export default function RootLayout({

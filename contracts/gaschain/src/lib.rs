@@ -73,10 +73,10 @@ pub struct Appointment {
 }
 
 #[contract]
-pub struct MediChainContract;
+pub struct GasChainContract;
 
 #[contractimpl]
-impl MediChainContract {
+impl GasChainContract {
     // 1. Initialization
     pub fn initialize(env: Env, admin: Address) {
         if env.storage().instance().has(&DataKey::Admin) {

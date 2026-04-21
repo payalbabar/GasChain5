@@ -47,3 +47,35 @@ export const sendXLM = async (destination, amount) => {
   const res = await server.submitTransaction(signedTransaction);
   return res;
 };
+
+/**
+ * Advanced Feature: Fee Sponsorship
+ * Wraps a user-signed transaction in a Fee Bump Transaction via backend
+ */
+export const sendSponsoredTransaction = async (transactionXDR) => {
+  try {
+    // 1. Send the user-signed XDR to our sponsorship API
+    const response = await fetch("/api/sponsor", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ xdr: transactionXDR }),
+    });
+
+    const result = await response.json();
+    if (!result.success) {
+      throw new Error(result.error || "Sponsorship failed");
+    }
+
+    // 2. The result contains the FeeBumpTransaction XDR signed by the sponsor
+    const { sponsored_xdr } = result;
+
+    // 3. Submit the sponsored transaction to Stellar
+    const sponsoredTx = StellarSdk.TransactionBuilder.fromXDR(sponsored_xdr, networkPassphrase);
+    const submissionResult = await server.submitTransaction(sponsoredTx);
+    
+    return submissionResult;
+  } catch (error) {
+    console.error("Sponsored Transaction Error:", error);
+    throw error;
+  }
+};

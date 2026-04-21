@@ -1,4 +1,4 @@
-# Security Checklist for MediChain
+# Security Checklist for GasChain (LPG Connect)
 
 ## 🔐 Authentication & Authorization
 - [x] Wallet connection is enforced per session.

@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { TransactionBuilder, Server, Networks, Keypair, FeeBumpTransaction } from "stellar-sdk";
+import { TransactionBuilder, Networks, Keypair, FeeBumpTransaction, Horizon } from "stellar-sdk";
 
 const HORIZON_URL = "https://horizon-testnet.stellar.org";
 
@@ -12,7 +12,7 @@ export async function POST(req: Request) {
     }
 
     // 1. Initialize Stellar Server for testnet
-    const server = new Server(HORIZON_URL);
+    const server = new Horizon.Server(HORIZON_URL);
     const networkPassphrase = Networks.TESTNET;
 
     // 2. Decode the incoming unsigned/signed transaction from the user
@@ -34,11 +34,11 @@ export async function POST(req: Request) {
     const sponsorKeypair = Keypair.fromSecret(sponsorSecret);
 
     // 4. Create a Fee Bump Transaction
-    // A FeeBumpTransaction wraps the inner transaction and pays the fees.
-    const feeBumpTx = new FeeBumpTransaction(
-      tx as any,
+    const feeBumpTx = TransactionBuilder.buildFeeBumpTransaction(
       sponsorKeypair.publicKey(),
-      "2000" // 2x the base fee of 1000 stroops
+      "2000",
+      tx as any,
+      networkPassphrase
     );
 
     // 5. Sign the Fee Bump Transaction with the sponsor's key

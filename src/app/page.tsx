@@ -64,7 +64,7 @@ export default function Home() {
     <div className="flex flex-col">
       {/* TOPBAR */}
       <nav className="sticky top-0 z-[100] bg-burgundy flex items-center justify-between px-10 h-14 border-b-3 border-lime">
-        <div className="font-bebas text-[22px] tracking-[4px] text-lime">MEDIVAULT</div>
+        <div className="font-bebas text-[22px] tracking-[4px] text-lime">GASCHAIN</div>
         <div className="hidden md:flex">
           <Link href="#features" className="font-mono-plex text-[11px] font-semibold tracking-[2px] uppercase text-cream px-5 h-14 flex items-center border-l border-white/10 hover:bg-lime hover:text-ink transition-colors cursor-crosshair">Features</Link>
           <Link href="#how" className="font-mono-plex text-[11px] font-semibold tracking-[2px] uppercase text-cream px-5 h-14 flex items-center border-l border-white/10 hover:bg-lime hover:text-ink transition-colors cursor-crosshair">How it Works</Link>
@@ -93,7 +93,7 @@ export default function Home() {
             YOUR<br /><span className="text-burgundy">HEALTH</span><br />ON CHAIN
           </h1>
           <p className="text-lg leading-[1.7] text-ink-soft max-w-[440px] mb-12 font-light">
-            Decentralised. Immutable. Yours alone. MediVault stores your medical records on IPFS and anchors access rights to the blockchain — no hospital middlemen, no data breaches.
+            Decentralised. Immutable. Yours alone. GasChain (LPG Connect) stores your medical records on IPFS and anchors access rights to the blockchain — no hospital middlemen, no data breaches.
           </p>
           <div className="flex flex-wrap gap-4 items-center">
             <Link
@@ -123,7 +123,7 @@ export default function Home() {
             </div>
             <div className="relative z-[5] bg-cream/5 border border-lime/30 p-10 text-center w-[300px] backdrop-blur-md">
               <div className="w-16 h-16 bg-lime mx-auto mb-5 flex items-center justify-center text-2xl clip-path-hexagon">⬡</div>
-              <div className="font-bebas text-[28px] tracking-[3px] text-cream mb-2">MEDIVAULT</div>
+              <div className="font-bebas text-[28px] tracking-[3px] text-cream mb-2">GASCHAIN</div>
               <div className="font-mono-plex text-[10px] text-lime tracking-[2px] uppercase opacity-80">Secured · Decentralised · Yours</div>
             </div>
           </div>
@@ -147,7 +147,7 @@ export default function Home() {
           <div className="font-bebas text-[120px] leading-[0.8] text-card-border">01</div>
           <div className="flex-1 pl-10">
             <div className="font-mono-plex text-[10px] tracking-[4px] text-rust uppercase mb-3">Core Capabilities</div>
-            <div className="font-bebas text-[64px] leading-none tracking-[2px] text-ink">WHY MEDIVAULT</div>
+            <div className="font-bebas text-[64px] leading-none tracking-[2px] text-ink">WHY GASCHAIN</div>
           </div>
         </div>
 
@@ -155,7 +155,7 @@ export default function Home() {
           <FeatureCard 
             num="F — 001" 
             title="End-to-End Encrypted Storage" 
-            desc="Every file is encrypted before it touches IPFS. Your private key, your data. Not even MediVault can read your records without your explicit permission."
+            desc="Every file is encrypted before it touches IPFS. Your private key, your data. Not even GasChain can read your records without your explicit permission."
             icon="🔐"
             isBig
           />
@@ -228,7 +228,7 @@ export default function Home() {
         </h2>
         <div>
           <p className="text-cream/60 text-lg leading-[1.8] font-light mb-10">
-            Join thousands of patients who've reclaimed control of their health data. No subscriptions. No corporations. Just you and your records, secured by cryptography.
+            Join thousands of patients who've reclaimed control of their health data. No subscriptions. No corporations. Just you and your records, secured by cryptography (LPG Connect).
           </p>
           <button 
             onClick={connect}
@@ -240,8 +240,8 @@ export default function Home() {
       </section>
 
       <footer className="bg-burgundy px-10 md:px-20 py-10 flex flex-col md:flex-row items-center justify-between border-t-3 border-lime gap-6">
-        <div className="font-bebas text-[28px] tracking-[6px] text-lime">MEDIVAULT</div>
-        <div className="font-mono-plex text-[10px] tracking-[2px] uppercase text-white/40">© 2026 MediVault Protocol. Decentralised. Open Source.</div>
+        <div className="font-bebas text-[28px] tracking-[6px] text-lime">GASCHAIN</div>
+        <div className="font-mono-plex text-[10px] tracking-[2px] uppercase text-white/40">© 2026 GasChain Protocol. Decentralised. Open Source (LPG Connect).</div>
       </footer>
     </div>
   );
